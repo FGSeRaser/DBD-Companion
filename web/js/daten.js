@@ -88,7 +88,10 @@ export async function uebersetzungen() {
 export async function bilderDaten() {
   if (bilder) return bilder;
   const roh = await lade("bilder");
-  bilder = { perks: roh?.daten?.perks || {}, charaktere: roh?.daten?.charaktere || {}, maps: roh?.daten?.maps || {} };
+  // tolerant suchen: Sonderzeichen, geschützte Leerzeichen, andere Apostrophe
+  const nn = (n) => String(n || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[’‘`´]/g, "'").replace(/[^a-z0-9]/g, "");
+  const mitNorm = (roh2, norm) => new Proxy(roh2, { get: (o, k) => { const v = o[k] || (typeof k === "string" ? norm?.[nn(k)] : undefined); return v && /IconHelp/i.test(v) ? undefined : v; } });
+  bilder = { perks: mitNorm(roh?.daten?.perks || {}, roh?.daten?.perksNorm), charaktere: mitNorm(roh?.daten?.charaktere || {}, roh?.daten?.charNorm), maps: roh?.daten?.maps || {} };
   return bilder;
 }
 
