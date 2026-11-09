@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- DBD Companion – von FGSeRaser – https://github.com/FGSeRaser -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>DBDCompanion</RootNamespace>
+    <AssemblyName>DBD Companion</AssemblyName>
+    <StartupObject>DBDCompanion.Program</StartupObject>
+    <MyType>WindowsFormsWithCustomSubMain</MyType>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Nullable>disable</Nullable>
+    <OptionStrict>Off</OptionStrict>
+    <OptionInfer>On</OptionInfer>
+    <Version>2.0.0</Version>
+    <Authors>FGSeRaser</Authors>
+    <Company>FGSeRaser</Company>
+    <Product>DBD Companion</Product>
+    <Description>Challenges, Timer, Builds, Ranking und Ingame-Overlay für Dead by Daylight – von FGSeRaser (github.com/FGSeRaser)</Description>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+  <ItemGroup>
+    <Import Include="System" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Threading.Tasks" />
+    <Import Include="Microsoft.VisualBasic" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="web\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

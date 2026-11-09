@@ -1,0 +1,30 @@
+{
+ "aktualisiert": "2026-11-09T09:58:35.124Z",
+ "daten": {
+  "id": 617,
+  "perks": [
+   {
+    "id": "FlipFlop",
+    "bloodpoints": 100000,
+    "shards": 2000
+   },
+   {
+    "id": "K23P03",
+    "bloodpoints": 100000,
+    "shards": 2000
+   },
+   {
+    "id": "NurseCalling",
+    "bloodpoints": 100000,
+    "shards": 2000
+   },
+   {
+    "id": "S33P03",
+    "bloodpoints": 100000,
+    "shards": 2000
+   }
+  ],
+  "start": 1793718000,
+  "end": 1794322799
+ }
+}

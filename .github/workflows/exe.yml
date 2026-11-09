@@ -1,0 +1,64 @@
+# DBD Companion – baut bei jedem Push die Windows-EXE und veröffentlicht ein Release.
+# von FGSeRaser – https://github.com/FGSeRaser
+name: EXE bauen
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bauen:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Neueste Daten von EntityDex holen
+        shell: pwsh
+        run: |
+          $basis = "https://fgseraser.github.io/EntityDex"
+          foreach ($n in "charaktere","perks","deutsch","bilder","schrein") {
+            try { Invoke-WebRequest "$basis/data/$n.json" -OutFile "web/daten/$n.json" -UseBasicParsing; "✔ $n" } catch { "✘ $n (alte Daten bleiben)" }
+          }
+          foreach ($n in "builds","maps") {
+            try { Invoke-WebRequest "$basis/js/$n.js" -OutFile "web/js/$n.js" -UseBasicParsing; "✔ $n.js" } catch { "✘ $n.js" }
+          }
+
+      - name: Veröffentlichen
+        shell: pwsh
+        run: |
+          $v = "2.0.${{ github.run_number }}"
+          dotnet publish DBDCompanion.vbproj -c Release -r win-x64 --self-contained true -p:Version=$v -o "ausgabe/DBD Companion"
+          Copy-Item ANLEITUNG.md "ausgabe/DBD Companion/ANLEITUNG.md"
+          Compress-Archive -Path "ausgabe/DBD Companion" -DestinationPath "ausgabe/DBD-Companion-$v.zip"
+          "VERSION=$v" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DBD-Companion-${{ env.VERSION }}
+          path: ausgabe/DBD-Companion-${{ env.VERSION }}.zip
+
+      - name: Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: DBD Companion ${{ env.VERSION }}
+          files: ausgabe/DBD-Companion-${{ env.VERSION }}.zip
+          body: |
+            **DBD Companion** – Challenges, Timer, Builds, Ranking, Maps und Ingame-Overlay für Dead by Daylight.
+            von [FGSeRaser](https://github.com/FGSeRaser)
+
+            **Installieren:** ZIP herunterladen, entpacken, `DBD Companion.exe` starten. Fertig – nichts weiter installieren
+            (Windows 10/11 hat die nötige WebView2-Laufzeit schon dabei).
+
+            **Wichtig fürs Overlay:** In Dead by Daylight unter *Einstellungen → Grafik → Anzeigemodus* auf **Fenster-Vollbild** stellen.
+
+            Deine Challenges und Einstellungen bleiben beim Update erhalten. Alle Details stehen in der ANLEITUNG.md im ZIP.

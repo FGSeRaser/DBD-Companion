@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>DBD Companion – OBS Overlay</title>
+<link rel="stylesheet" href="css/app.css">
+<style>
+  /* OBS-Browserquelle: durchsichtig, Größe wie der Bildschirm (z. B. 1920×1080). von FGSeRaser */
+  html, body { background: transparent !important; overflow: hidden; margin: 0; width: 100vw; height: 100vh; }
+  .pos { position: absolute; transform-origin: top left; }
+</style>
+</head>
+<body>
+<div id="bühne"></div>
+<script type="module">
+import { widgetHtml } from "./js/overlay-render.js";
+const b = document.getElementById("bühne");
+let alt = "";
+async function holen() {
+  try {
+    const t = await (await fetch("/state", { cache: "no-store" })).text();
+    if (t !== alt) {
+      alt = t;
+      const ws = JSON.parse(t);
+      b.innerHTML = ws.map((w) => `<div class="pos" style="left:${w.x * 100}vw;top:${w.y * 100}vh">${widgetHtml(w)}</div>`).join("");
+    }
+  } catch {}
+}
+setInterval(holen, 250);
+holen();
+</script>
+</body>
+</html>

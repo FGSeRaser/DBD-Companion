@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBD Companion</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="kopf">
+  <div class="logo">🔪 <b>DBD</b> Companion</div>
+  <div class="rolle" id="rolle">
+    <button data-r="survivor">🏃 Survivor</button>
+    <button data-r="killer">🔪 Killer</button>
+  </div>
+  <div class="kopf-rechts">
+    <button id="ow-schalter" class="ow-aus" title="Ingame-Overlay ein/aus">🖥 Overlay: AUS</button>
+  </div>
+</header>
+<nav id="nav">
+  <button data-tab="start">🏠 Start</button>
+  <button data-tab="challenges">🎯 Challenges</button>
+  <button data-tab="timer">⏱ Timer</button>
+  <button data-tab="builds">🎲 Builds</button>
+  <button data-tab="perks">🩸 Perks</button>
+  <button data-tab="charaktere">👥 Charaktere</button>
+  <button data-tab="ranking">🏆 Ranking</button>
+  <button data-tab="maps">🗺 Maps</button>
+  <button data-tab="overlay">🖥 Overlay</button>
+  <button data-tab="einstellungen">⚙ Einstellungen</button>
+</nav>
+<main>
+  <section id="tab-start" class="tab"></section>
+  <section id="tab-challenges" class="tab"></section>
+  <section id="tab-timer" class="tab"></section>
+  <section id="tab-builds" class="tab"></section>
+  <section id="tab-perks" class="tab"></section>
+  <section id="tab-charaktere" class="tab"></section>
+  <section id="tab-ranking" class="tab"></section>
+  <section id="tab-maps" class="tab"></section>
+  <section id="tab-overlay" class="tab"></section>
+  <section id="tab-einstellungen" class="tab"></section>
+</main>
+<footer class="fuss">DBD Companion von <a href="https://github.com/FGSeRaser" target="_blank" rel="noopener">FGSeRaser</a> · Daten über <a href="https://fgseraser.github.io/EntityDex/" target="_blank" rel="noopener">EntityDex</a> · <span id="daten-stand"></span></footer>
+<div id="dialog" class="dialog" hidden><div class="dialog-box" id="dialog-box"></div></div>
+<div id="toast" class="toast" hidden></div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+/* DBD Companion – Oberfläche. von FGSeRaser – https://github.com/FGSeRaser */
+:root {
+  --bg: #0d0b10; --bg2: #16131b; --karte: #1e1a24; --karte2: #27222f; --rand: #3a3344;
+  --text: #ece7f1; --leise: #a59cb2; --rot: #e0243f; --rot2: #ff4d66; --gold: #ffcf4a; --gruen: #4ade80; --blau: #4fb8ff;
+  --radius: 12px;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 "Segoe UI", system-ui, sans-serif; }
+a { color: var(--rot2); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; background: var(--karte2); border: 1px solid var(--rand); border-radius: 9px; padding: 7px 12px; }
+button:hover { border-color: var(--rot); }
+button.haupt { background: var(--rot); border-color: var(--rot); color: #fff; font-weight: 600; }
+button.haupt:hover { background: var(--rot2); }
+button.klein { padding: 3px 8px; font-size: 13px; }
+button.an { background: var(--rot); border-color: var(--rot); color: #fff; }
+input, select, textarea { background: var(--bg2); border: 1px solid var(--rand); border-radius: 8px; padding: 7px 10px; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--rot); }
+textarea { width: 100%; min-height: 70px; resize: vertical; }
+input[type=color] { padding: 0; width: 38px; height: 32px; }
+input[type=range] { accent-color: var(--rot); }
+input[type=checkbox] { accent-color: var(--rot); width: 17px; height: 17px; vertical-align: middle; }
+label { color: var(--leise); font-size: 13px; }
+h2 { margin: 6px 0 12px; font-size: 21px; }
+h3 { margin: 4px 0 8px; font-size: 17px; }
+.leise { color: var(--leise); }
+.klein { font-size: 13px; }
+
+.kopf { display: flex; align-items: center; gap: 14px; padding: 10px 16px; background: linear-gradient(90deg, #1a0d12, #120f17); border-bottom: 1px solid var(--rand); position: sticky; top: 0; z-index: 20; }
+.logo { font-size: 19px; letter-spacing: .5px; }
+.logo b { color: var(--rot2); }
+.rolle { display: flex; gap: 4px; }
+.rolle button.an { background: var(--rot); }
+.kopf-rechts { margin-left: auto; display: flex; gap: 8px; }
+.ow-aus { background: #2a2230; }
+.ow-an { background: #14532d !important; border-color: var(--gruen) !important; color: #d1fae5; }
+nav { display: flex; gap: 4px; padding: 8px 12px; background: var(--bg2); border-bottom: 1px solid var(--rand); overflow-x: auto; position: sticky; top: 55px; z-index: 19; }
+nav button { white-space: nowrap; background: transparent; border-color: transparent; }
+nav button.an { background: var(--karte2); border-color: var(--rot); color: #fff; }
+main { padding: 16px; max-width: 1400px; margin: 0 auto; }
+.tab { display: none; }
+.tab.an { display: block; }
+.fuss { text-align: center; color: var(--leise); font-size: 12px; padding: 18px; }
+
+.karte { background: var(--karte); border: 1px solid var(--rand); border-radius: var(--radius); padding: 14px; }
+.raster { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.raster2 { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+@media (max-width: 900px) { .raster2 { grid-template-columns: 1fr; } }
+.zeile { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.zeile.ab { justify-content: space-between; }
+.leiste { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+.chip { padding: 3px 10px; border-radius: 99px; background: var(--karte2); border: 1px solid var(--rand); font-size: 13px; cursor: pointer; }
+.chip.an { background: var(--rot); border-color: var(--rot); color: #fff; }
+.feld { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.trenner { height: 1px; background: var(--rand); margin: 12px 0; }
+.box { background: var(--bg2); border: 1px dashed var(--rand); border-radius: 10px; padding: 10px 12px; color: var(--leise); }
+.hinweis { background: #1f1a10; border: 1px solid #5a4a1a; color: #f5e3b0; border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+
+/* Perks */
+.perk { display: flex; gap: 10px; align-items: flex-start; }
+.perk-icon { width: 56px; height: 56px; flex: none; border-radius: 6px; background: radial-gradient(circle, #2c2436, #120f17); display: grid; place-items: center; font-weight: 700; color: var(--leise); overflow: hidden; transform: rotate(0deg); }
+.perk-icon img { width: 100%; height: 100%; object-fit: contain; }
+.perk-icon.klein { width: 40px; height: 40px; font-size: 12px; }
+.perk-icon.mini { width: 30px; height: 30px; font-size: 11px; }
+.perk-name { font-weight: 600; }
+.perk-en { color: var(--leise); font-size: 12px; }
+.perk-text { white-space: pre-line; color: #d5cfe0; font-size: 13px; margin-top: 4px; }
+.perkwahl { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 6px; max-height: 360px; overflow: auto; }
+.perkwahl .perk { padding: 5px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; align-items: center; }
+.perkwahl .perk:hover { border-color: var(--rand); }
+.perkwahl .perk.an { border-color: var(--rot); background: #2a121a; }
+.slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.slot { background: var(--bg2); border: 1px solid var(--rand); border-radius: 10px; padding: 8px; text-align: center; min-height: 110px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.slot .perk-icon { width: 64px; height: 64px; }
+.slots.kompakt { gap: 4px; }
+.slots.kompakt .slot { min-height: 0; padding: 4px 2px; min-width: 0; }
+.slots.kompakt .slot .perk-icon { width: 46px; height: 46px; }
+.slots.kompakt .klein { font-size: 11px; line-height: 1.15; word-break: break-word; }
+.slot { min-width: 0; }
+.slot.gesperrt { border-color: var(--gold); }
+
+/* Charaktere / Porträts */
+.portraits { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.portrait { background: var(--karte); border: 1px solid var(--rand); border-radius: 10px; padding: 4px; text-align: center; cursor: pointer; position: relative; user-select: none; }
+.portrait img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 7px; background: #111; display: block; }
+.portrait .nm { font-size: 11px; line-height: 1.2; margin-top: 3px; min-height: 26px; }
+.portrait.an { border-color: var(--gruen); box-shadow: 0 0 0 2px var(--gruen) inset; }
+.portrait.an::after { content: "✔"; position: absolute; top: 4px; right: 6px; color: var(--gruen); font-weight: 800; text-shadow: 0 0 4px #000; }
+.portrait.klein { width: 72px; }
+.portrait.klein .nm { font-size: 10px; min-height: 0; }
+
+/* Timer */
+.timer { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; background: var(--karte); border: 1px solid var(--rand); border-left: 6px solid var(--f, var(--rot)); cursor: pointer; }
+.timer .zeit { font: 700 28px/1 Consolas, monospace; min-width: 90px; }
+.timer.laeuft { background: #221822; }
+.timer.warn .zeit { color: var(--rot2); animation: blink .6s infinite alternate; }
+@keyframes blink { to { opacity: .45; } }
+.balken { height: 6px; background: #2b2533; border-radius: 3px; overflow: hidden; }
+.balken > i { display: block; height: 100%; background: var(--f, var(--rot)); }
+.taste { display: inline-block; min-width: 26px; padding: 2px 7px; border: 1px solid var(--rand); border-bottom-width: 3px; border-radius: 6px; background: var(--bg2); font: 600 12px Consolas, monospace; text-align: center; }
+.hotkey-feld { min-width: 150px; text-align: center; cursor: pointer; font-family: Consolas, monospace; }
+.hotkey-feld.lauscht { border-color: var(--gold); color: var(--gold); }
+
+/* Challenges */
+.ch-liste { display: flex; flex-direction: column; gap: 6px; }
+.ch-eintrag { padding: 9px 11px; border-radius: 10px; background: var(--karte); border: 1px solid var(--rand); cursor: pointer; }
+.ch-eintrag.an { border-color: var(--rot); }
+.ch-eintrag.fertig { opacity: .65; }
+.fortschritt { height: 10px; background: #2b2533; border-radius: 5px; overflow: hidden; }
+.fortschritt > i { display: block; height: 100%; background: linear-gradient(90deg, var(--rot), var(--gold)); }
+.pin { color: var(--gold); }
+
+/* Ranking */
+.tierliste { display: flex; flex-direction: column; gap: 4px; }
+.tier { display: flex; min-height: 84px; background: var(--karte); border: 1px solid var(--rand); border-radius: 8px; overflow: hidden; }
+.tier-label { width: 90px; flex: none; display: grid; place-items: center; font-weight: 800; font-size: 22px; color: #111; text-align: center; padding: 4px; cursor: pointer; word-break: break-word; }
+.tier-inhalt { flex: 1; display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; align-content: flex-start; }
+.tier-inhalt.ziel { background: #2a1e2e; }
+.tier-inhalt .portrait { width: 74px; }
+.tier-inhalt .portrait .nm { font-size: 10px; min-height: 0; }
+.portrait.gewaehlt { outline: 3px solid var(--gold); }
+
+/* Maps */
+.map-karte { overflow: hidden; padding: 0; cursor: pointer; }
+.map-karte img { width: 100%; height: 150px; object-fit: cover; display: block; background: #111; }
+.map-karte .inn { padding: 10px 12px; }
+.sterne { color: var(--gold); letter-spacing: 2px; cursor: pointer; }
+
+/* Overlay-Vorschau */
+.bildschirm { position: relative; width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #2a3324, #18201a 40%, #3a2a22); border: 2px solid var(--rand); border-radius: 10px; overflow: hidden; }
+.bildschirm::before { content: "Dead by Daylight (Vorschau)"; position: absolute; inset: auto 0 8px 0; text-align: center; color: #ffffff30; font-size: 13px; }
+.bildschirm .ow { position: absolute; cursor: move; transform-origin: top left; }
+.ow-liste .karte { margin-bottom: 8px; }
+
+/* Overlay-Widgets (gleich wie im Spiel und in OBS) */
+.ow { font-family: "Segoe UI", system-ui, sans-serif; color: #fff; min-width: 180px; max-width: 360px; border-radius: 10px; padding: 8px 10px; }
+.ow .ow-titel { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: .85; margin-bottom: 4px; }
+.ow .ow-zeile { display: flex; align-items: center; gap: 7px; margin: 3px 0; }
+.ow .ow-zeile img { width: 26px; height: 26px; object-fit: contain; }
+.ow .ow-text { flex: 1; font-size: 14px; font-weight: 600; text-shadow: 0 1px 2px #000; }
+.ow .ow-sub { font-size: 12px; opacity: .8; }
+.ow .ow-gross { font-size: 20px; }
+.ow .ow-wert { font: 700 16px Consolas, monospace; text-shadow: 0 1px 2px #000; }
+.ow .ow-bar { height: 4px; background: #ffffff25; border-radius: 2px; overflow: hidden; margin-top: 2px; }
+.ow .ow-bar > i { display: block; height: 100%; }
+.ow .ow-icons { display: flex; gap: 4px; margin-top: 4px; }
+.ow .ow-icons img { width: 44px; height: 44px; object-fit: contain; }
+
+/* Dialog & Toast */
+.dialog { position: fixed; inset: 0; background: #000a; display: grid; place-items: center; z-index: 50; padding: 16px; }
+.dialog-box { background: var(--karte); border: 1px solid var(--rand); border-radius: 14px; padding: 18px; width: min(900px, 100%); max-height: 90vh; overflow: auto; }
+.toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: #111; border: 1px solid var(--rot); padding: 9px 16px; border-radius: 10px; z-index: 60; }
+.status-punkt { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--leise); margin-right: 5px; }
+.status-punkt.ok { background: var(--gruen); }
