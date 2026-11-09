@@ -22,6 +22,12 @@ Im Spiel per Hotkey abhaken (Standard): **Strg+Alt+S** geschafft · **Strg+Alt+V
 - **⏱ Timer**: jeder Timer und jeder Zähler (+1/−1) hat ein eigenes Hotkey-Feld.
 - **Abfangen** (Standard): Das Spiel bekommt die Taste nicht. **Durchlassen**: Die Taste wirkt im Spiel *und* im Companion – praktisch, wenn du z. B. einen Timer auf dieselbe Taste legen willst, die du im Spiel sowieso drückst.
 
+## Mit EntityDex (Handy) verbinden
+1. EntityDex-App aufs Handy (APK unter https://github.com/FGSeRaser/EntityDex/releases) oder https://fgseraser.github.io/EntityDex/ öffnen.
+2. Dort im Tab **🎯 Challenges** ein Konto erstellen (E-Mail + Passwort) und die Bestätigungs-Mail anklicken.
+3. Im Companion **⚙ Einstellungen → ☁ Konto & Sync** mit derselben E-Mail anmelden.
+Ab jetzt landen Challenges, die du am Handy anlegst oder für den Stream planst (📅), automatisch im Companion – und umgekehrt. Heute geplante Challenges zeigt dir die Startseite.
+
 ## Streamer-Modus (⚙ Einstellungen)
 - **OBS-Browserquelle**: Haken setzen → in OBS *Quelle hinzufügen → Browser* → URL `http://localhost:8833/`, Breite/Höhe wie dein Bildschirm (z. B. 1920 × 1080). Die Widgets erscheinen im Stream scharf und durchsichtig.
 - **Ingame-Overlay im Stream verstecken**: Du siehst das Overlay, deine Zuschauer nicht (z. B. wenn du stattdessen die OBS-Quelle nutzt, damit nichts doppelt ist).

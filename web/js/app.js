@@ -2,6 +2,7 @@
 // von FGSeRaser – https://github.com/FGSeRaser
 import * as D from "./daten.js";
 import { widgetHtml } from "./overlay-render.js";
+import * as Sync from "./sync.js";
 
 const VERSION = "2.0";
 const $ = (s, el = document) => el.querySelector(s);
@@ -89,6 +90,59 @@ let speicherTimer = null;
 function speichern() {
   clearTimeout(speicherTimer);
   speicherTimer = setTimeout(() => { try { localStorage.setItem("dbdcompanion2", JSON.stringify(S)); } catch {} }, 150);
+  syncBald();
+}
+
+// ================================================================ Konto & Sync mit EntityDex (Handy)
+let konto = null, syncLaeuft = false, letzterSync = null, syncTimer = null, letzteChHash = "";
+function syncBald() {
+  if (!konto) return;
+  const h = JSON.stringify(S.challenges);
+  if (h === letzteChHash) return;
+  clearTimeout(syncTimer); syncTimer = setTimeout(() => syncJetzt(false), 2500);
+}
+async function syncJetzt(laut) {
+  if (!konto || syncLaeuft) return;
+  syncLaeuft = true;
+  try {
+    const r = await Sync.synchronisieren(S.challenges);
+    S.challenges = r.liste;
+    letzteChHash = JSON.stringify(S.challenges);
+    try { localStorage.setItem("dbdcompanion2", JSON.stringify(S)); } catch {}
+    letzterSync = new Date();
+    if (r.runter) { toast(`☁ ${r.runter} Challenge(s) von EntityDex übernommen`); if (S.tab === "challenges" || S.tab === "start") zeichneTab(S.tab); overlaySenden(true); }
+    else if (laut) toast("☁ Alles synchron");
+  } catch (e) { if (laut) toast("Sync fehlgeschlagen: " + e.message); }
+  syncLaeuft = false;
+  if (S.tab === "einstellungen") zeichneKonto();
+}
+async function zeichneKonto() {
+  const box = $("#e-konto");
+  if (!box) return;
+  if (!(await Sync.verfuegbar())) { box.innerHTML = `<div class="box">Der Online-Sync ist noch nicht eingerichtet. Sobald er in EntityDex aktiviert ist, kannst du dich hier anmelden.</div>`; return; }
+  if (konto) {
+    box.innerHTML = `<p>☁ Angemeldet als <b>${esc(konto.email)}</b></p>
+      <p class="klein leise">${letzterSync ? "Zuletzt synchronisiert: " + letzterSync.toLocaleTimeString("de-DE") : "Noch nicht synchronisiert"} · Challenges aus der EntityDex-App kommen automatisch hier an – und Fortschritt vom PC landet auf deinem Handy.</p>
+      <div class="zeile"><button class="haupt" id="k-sync">⟳ Jetzt synchronisieren</button><button id="k-ab">Abmelden</button></div>`;
+    $("#k-sync").onclick = () => syncJetzt(true);
+    $("#k-ab").onclick = async () => { await Sync.abmelden(); konto = null; zeichneKonto(); };
+  } else {
+    box.innerHTML = `<p class="klein leise">Mit demselben Konto wie in der <b>EntityDex</b>-App anmelden – dann werden deine dort geplanten Challenges automatisch übernommen.</p>
+      <div class="zeile"><input id="k-mail" type="email" placeholder="E-Mail" style="flex:1"><input id="k-pw" type="password" placeholder="Passwort" style="flex:1"></div>
+      <div class="zeile" style="margin-top:8px"><button class="haupt" id="k-login">Anmelden</button><button id="k-neu">Konto erstellen</button><button id="k-vergessen">Passwort vergessen</button></div>`;
+    const mail = () => $("#k-mail").value.trim(), pw = () => $("#k-pw").value;
+    $("#k-login").onclick = async () => { try { konto = await Sync.anmelden(mail(), pw()); toast("☁ Angemeldet"); await syncJetzt(true); syncStarten(); zeichneKonto(); } catch (e) { toast(e.message); } };
+    $("#k-neu").onclick = async () => { try { const r = await Sync.registrieren(mail(), pw()); if (r.bestaetigen) toast("📧 Bitte den Link in der E-Mail anklicken, dann hier anmelden."); else { konto = r.user; syncJetzt(true); syncStarten(); zeichneKonto(); } } catch (e) { toast(e.message); } };
+    $("#k-vergessen").onclick = async () => { try { await Sync.passwortVergessen(mail()); toast("📧 E-Mail zum Zurücksetzen ist unterwegs"); } catch (e) { toast(e.message); } };
+  }
+}
+let syncGestartet = false;
+function syncStarten() {
+  if (syncGestartet) return;
+  syncGestartet = true;
+  Sync.live(() => { clearTimeout(syncTimer); syncTimer = setTimeout(() => syncJetzt(false), 800); });
+  setInterval(() => syncJetzt(false), 60000);
+  addEventListener("focus", () => syncJetzt(false));
 }
 
 // ================================================================ Hilfen
@@ -196,7 +250,10 @@ $("#ow-schalter").addEventListener("click", () => overlayUmschalten());
 async function zeichneStart() {
   const el = $("#tab-start");
   const pins = S.challenges.filter((c) => c.pin);
+  const heute = new Date().toISOString().slice(0, 10);
+  const heuteGeplant = S.challenges.filter((c) => c.geplant === heute && !c.ok);
   el.innerHTML = `
+  ${heuteGeplant.length ? `<div class="hinweis" style="margin-bottom:12px">📅 <b>Heute für den Stream geplant:</b> ${heuteGeplant.map((c) => esc(c.name) + (c.planNotiz ? ` <span class="leise">(${esc(c.planNotiz)})</span>` : "")).join(" · ")}</div>` : ""}
   <div class="raster2">
     <div class="karte">
       <h2>Willkommen im Nebel 👋</h2>
@@ -379,6 +436,7 @@ function challengeKurz(c) {
     <div class="fortschritt" style="margin:6px 0"><i style="width:${w.proz}%"></i></div>
     <div class="zeile"><button class="klein" data-chk="${c.id}" data-a="erfolg">✔ Geschafft</button><button class="klein" data-chk="${c.id}" data-a="versuch">✘ Versuch</button></div></div>`;
 }
+function planDatum(d) { try { return new Date(d + "T12:00:00").toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit" }); } catch { return d; } }
 function namePlus(n) { const c = charFinden(n); return c ? anzeigename(c) : n; }
 function chAktiv() { return S.challenges.find((c) => c.id === S.aktiv) || null; }
 function challengeAktion(id, a) {
@@ -412,14 +470,15 @@ function zielListe(art) {
 }
 function zeichneChallenges() {
   const el = $("#tab-challenges");
-  const liste = S.challenges.filter((c) => !chFilter || (chFilter === "offen" ? !c.ok : chFilter === "fertig" ? c.ok : c.pin));
+  let liste = S.challenges.filter((c) => !chFilter || (chFilter === "offen" ? !c.ok : chFilter === "fertig" ? c.ok : chFilter === "geplant" ? !!c.geplant : c.pin));
+  if (chFilter === "geplant") liste = liste.slice().sort((a, b) => a.geplant.localeCompare(b.geplant));
   el.innerHTML = `
   <div class="raster2" style="grid-template-columns:340px 1fr">
     <div>
       <div class="zeile" style="margin-bottom:8px"><button class="haupt" id="ch-neu">+ Neue Challenge</button><button id="ch-zufall">🎲 Zufall</button></div>
-      <div class="chips">${[["", "Alle"], ["offen", "Offen"], ["pin", "📌 Angepinnt"], ["fertig", "Geschafft"]].map(([k, n]) => `<span class="chip ${chFilter === k ? "an" : ""}" data-chf="${k}">${n}</span>`).join("")}</div>
+      <div class="chips">${[["", "Alle"], ["geplant", "📅 Stream-Plan"], ["offen", "Offen"], ["pin", "📌 Angepinnt"], ["fertig", "Geschafft"]].map(([k, n]) => `<span class="chip ${chFilter === k ? "an" : ""}" data-chf="${k}">${n}</span>`).join("")}</div>
       <div class="ch-liste">${liste.map((c) => { const w = chWerte(c); return `<div class="ch-eintrag ${c.id === S.aktiv ? "an" : ""} ${c.ok ? "fertig" : ""}" data-ch="${c.id}">
-        <div class="zeile ab"><b>${c.pin ? '<span class="pin">📌</span> ' : ""}${esc(c.name)}</b>${c.ok ? "🏆" : ""}</div>
+        <div class="zeile ab"><b>${c.pin ? '<span class="pin">📌</span> ' : ""}${esc(c.name)}</b>${c.ok ? "🏆" : ""}${c.geplant ? `<span class="chip">📅 ${esc(planDatum(c.geplant))}</span>` : ""}</div>
         <div class="klein leise">${w.fertig}/${w.ges} · ${w.vers} Versuche · ${c.rolle === "killer" ? "Killer" : c.rolle === "survivor" ? "Survivor" : "Beide"}</div>
         <div class="fortschritt" style="margin-top:5px"><i style="width:${w.proz}%"></i></div></div>`; }).join("") || `<div class="box">Noch keine Challenges. Leg los mit „+ Neue Challenge“ oder einer Vorlage!</div>`}</div>
     </div>
@@ -442,6 +501,7 @@ function zeichneChallengeDetail() {
   h.innerHTML = `<div class="karte">
     <div class="zeile ab"><h2>${c.ok ? "🏆 " : ""}${esc(c.name)}</h2>
       <div class="zeile"><button class="${c.pin ? "an" : ""}" id="chd-pin">📌 ${c.pin ? "Angepinnt" : "Ans Overlay anpinnen"}</button><button id="chd-edit">✏ Bearbeiten</button><button id="chd-dup">⧉</button><button id="chd-del">🗑</button></div></div>
+    ${c.geplant ? `<p>📅 Für den Stream geplant: <b>${esc(planDatum(c.geplant))}</b>${c.planNotiz ? " – " + esc(c.planNotiz) : ""}</p>` : ""}
     ${c.regel ? `<p style="white-space:pre-line">${esc(c.regel)}</p>` : ""}
     ${c.ziel ? `<p class="leise">Ziel: <b>${esc(c.ziel)}</b></p>` : ""}
     ${perks.length ? `<div class="slots" style="margin:10px 0">${perks.map((p) => `<div class="slot">${perkIcon(p)}<div class="klein">${esc(anzeigename(p))}</div></div>`).join("")}</div>` : ""}
@@ -1051,6 +1111,10 @@ function zeichneEinstellungen() {
       <div class="zeile" style="margin-top:8px"><label>Port</label><input type="number" id="e-port" value="${S.streamer.port}" style="width:90px"></div>
     </div>
     <div class="karte">
+      <h3>☁ Konto & Sync mit EntityDex</h3>
+      <div id="e-konto"><div class="box">Lädt …</div></div>
+    </div>
+    <div class="karte">
       <h3>💾 Daten</h3>
       <div class="klein">${Object.entries(D.herkunft).map(([k, v]) => `<div><span class="status-punkt ${v === "live" ? "ok" : ""}"></span>${esc(k)}: ${v === "live" ? "live von EntityDex" : v === "offline" ? "mitgelieferte Daten" : "fehlt"}</div>`).join("")}</div>
       <p class="klein leise">${CHARS.filter((c) => c.rolle === "killer").length} Killer · ${CHARS.filter((c) => c.rolle === "survivor").length} Survivor · ${PERKS.length} Perks · ${MAPS.length} Maps</p>
@@ -1080,6 +1144,7 @@ function zeichneEinstellungen() {
   };
   $("#e-reset").onclick = () => { if (confirm("Wirklich ALLES zurücksetzen (Challenges, Timer, Rankings, Einstellungen)?")) { localStorage.removeItem("dbdcompanion2"); S = laden(); zeigeTab("start"); hotkeysSenden(); } };
   hotkeyFelderAktivieren(el);
+  zeichneKonto();
 }
 
 // ================================================================ Start
@@ -1097,5 +1162,7 @@ function zeichneEinstellungen() {
   hotkeysSenden();
   senden("streamer", S.streamer);
   senden("bereit", { version: VERSION, overlayAn: S.overlay.an, bildschirm: S.overlay.bildschirm });
+  try { konto = await Sync.nutzer(); } catch {}
+  if (konto) { syncJetzt(false); syncStarten(); }
   overlaySenden(true);
 })();

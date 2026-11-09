@@ -13,6 +13,7 @@ von [FGSeRaser](https://github.com/FGSeRaser)
 - **🩸 Perks & 👥 Charaktere** – alle Killer, Survivor und Perks mit Icons, Porträts und Beschreibungen, **deutsch und englisch** umschaltbar. Die Daten kommen alle 3 Stunden frisch von EntityDex – neue Kapitel sind automatisch dabei.
 - **🏆 Ranking** – Tier-Listen (S–F, Reihen frei benennbar) für Killer, Survivor und Maps mit allen Porträts. Als Bild speichern.
 - **🗺 Maps** – alle Realms und Maps mit Bild, Beschreibung, eigener Bewertung (Killer-/Survivor-seitig) und Notizen.
+- **☁ Verbunden mit EntityDex** – Challenges am Handy in der [EntityDex](https://github.com/FGSeRaser/EntityDex)-App anlegen und für den Stream planen, im Companion mit demselben Konto anmelden → werden automatisch übernommen. Fortschritt vom PC landet wieder auf dem Handy.
 - **🎥 Streamer-Modus** – Overlay als **OBS-Browserquelle** (gestochen scharf, durchsichtig), Ingame-Overlay und/oder Companion-Fenster vor der Aufnahme verstecken.
 
 ## Herunterladen
@@ -31,6 +32,7 @@ Hauptfenster.vb         Fenster, Tray, Brücke zur Oberfläche, Overlay-Verwaltu
 OverlayWidget.vb        ein Overlay-Teil als durchsichtiges, durchklickbares Fenster
 Hotkeys.vb              globale Hotkeys (RegisterHotKey oder Tastatur-Hook)
 ObsServer.vb            localhost-Server für die OBS-Browserquelle
+web/js/sync.js          Konto & Challenge-Sync mit EntityDex (gleiche Datei wie dort)
 BildCache.vb            Perk-Icons und Porträts fürs Overlay (mit Festplatten-Cache)
 web/                    Oberfläche (HTML/CSS/JS)
 web/daten/              mitgelieferte Daten (falls offline) – werden beim Bauen von EntityDex aktualisiert
