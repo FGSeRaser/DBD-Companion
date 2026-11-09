@@ -88,11 +88,11 @@ Public Class Hotkeys
                     fehler.Add(eintraege(i).Id)
                 End If
             Next
-            If fehler.Count > 0 Then RaiseEvent Problem($"{fehler.Count} Hotkey(s) sind schon von einem anderen Programm belegt. Wähle eine andere Taste oder stell auf „Durchlassen“.")
+            If fehler.Count > 0 Then RaiseEvent Problem($"{fehler.Count} Hotkey(s) sind schon von einem anderen Programm belegt. Wähle eine andere Taste oder stell auf »Durchlassen«.")
         Else
             hookProcRef = AddressOf HookCallback
             hook = SetWindowsHookEx(WH_KEYBOARD_LL, hookProcRef, GetModuleHandle(Nothing), 0)
-            If hook = IntPtr.Zero Then RaiseEvent Problem("Der Tastatur-Hook konnte nicht gestartet werden – bitte „Abfangen“ benutzen.")
+            If hook = IntPtr.Zero Then RaiseEvent Problem("Der Tastatur-Hook konnte nicht gestartet werden – bitte »Abfangen« benutzen.")
         End If
     End Sub
 

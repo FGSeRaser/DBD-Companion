@@ -77,7 +77,7 @@ Public Class Hauptfenster
                                                             End Sub
             web.CoreWebView2.Navigate("https://dbd.local/index.html")
         Catch ex As Exception
-            MessageBox.Show("Die Oberfläche konnte nicht starten. Ist die „Microsoft Edge WebView2 Runtime“ installiert?" &
+            MessageBox.Show("Die Oberfläche konnte nicht starten. Ist die »Microsoft Edge WebView2 Runtime« installiert?" &
                             vbCrLf & "Download: https://developer.microsoft.com/microsoft-edge/webview2/" & vbCrLf & vbCrLf & ex.Message,
                             "DBD Companion", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
