@@ -65,7 +65,7 @@ Public Class OverlayWidget
     ' ------------------------------------------------------------------ Daten
     Public ReadOnly WidgetId As String
     Private daten As JsonElement
-    Private bearbeiten As Boolean = False
+    Private imEdit As Boolean = False
     Private ziehStart As Point, fensterStart As Point, zieht As Boolean
     Private ReadOnly bilder As BildCache
     Public Property Bildschirm As Rectangle
@@ -105,7 +105,7 @@ Public Class OverlayWidget
     End Sub
 
     Public Sub Bearbeiten(an As Boolean)
-        bearbeiten = an
+        imEdit = an
         Dim ex As Integer = GetWindowLong(Handle, GWL_EXSTYLE)
         ex = If(an, ex And Not WS_EX_TRANSPARENT, ex Or WS_EX_TRANSPARENT)
         SetWindowLong(Handle, GWL_EXSTYLE, ex)
@@ -124,7 +124,7 @@ Public Class OverlayWidget
 
     ' ------------------------------------------------------------------ Verschieben
     Protected Overrides Sub OnMouseDown(e As MouseEventArgs)
-        If bearbeiten AndAlso e.Button = MouseButtons.Left Then
+        If imEdit AndAlso e.Button = MouseButtons.Left Then
             zieht = True
             ziehStart = Control.MousePosition
             fensterStart = Location
@@ -201,7 +201,7 @@ Public Class OverlayWidget
         Dim dpi As Single = DeviceDpi / 96.0F
         Dim s As Single = CSng(Num(daten, "skala", 1)) * dpi
         Dim deckkraft As Double = Num(daten, "deckkraft", 0.55)
-        Dim hg = Farbe(Str(daten, "hg"), CInt(Math.Max(If(bearbeiten, 90, 0), deckkraft * 255)))
+        Dim hg = Farbe(Str(daten, "hg"), CInt(Math.Max(If(imEdit, 90, 0), deckkraft * 255)))
         Dim akzent = Farbe(Str(daten, "akzent"))
         Dim textFarbe = Farbe(If(Str(daten, "text"), "#ffffff"))
         Dim titel As String = Str(daten, "titel")
@@ -225,11 +225,11 @@ Public Class OverlayWidget
                 Dim t As String = If(Str(z, "text"), "")
                 Dim f = If(IstWahr(z, "gross"), fGross, fText)
                 Dim tw As Single = Math.Min(mg.MeasureString(t, f).Width, 340 * s)
-                Dim w As Single = pad * 2 + 6 * s + tw
-                If Str(z, "icon") IsNot Nothing Then w += iconGr + 6 * s
-                Dim wert As String = Str(z, "wert")
-                If wert IsNot Nothing Then w += mg.MeasureString(wert, fWert).Width + 10 * s
-                breite = Math.Max(breite, w)
+                Dim zb As Single = pad * 2 + 6 * s + tw
+                If Str(z, "icon") IsNot Nothing Then zb += iconGr + 6 * s
+                Dim wertM As String = Str(z, "wert")
+                If wertM IsNot Nothing Then zb += mg.MeasureString(wertM, fWert).Width + 10 * s
+                breite = Math.Max(breite, zb)
                 Dim zh As Single = Math.Max(f.Height, If(Str(z, "icon") IsNot Nothing, iconGr, 0))
                 If Str(z, "sub") IsNot Nothing Then zh += fSub.Height
                 If HatNum(z, "fortschritt") Then zh += 6 * s
@@ -241,24 +241,24 @@ Public Class OverlayWidget
             End If
             hoehe += pad - 4 * s
             breite = Math.Min(breite, 520 * s)
-            Dim W As Integer = CInt(Math.Ceiling(breite)) + 2, H As Integer = CInt(Math.Ceiling(hoehe)) + 2
+            Dim BB As Integer = CInt(Math.Ceiling(breite)) + 2, HH As Integer = CInt(Math.Ceiling(hoehe)) + 2
 
-            Using bmp As New Bitmap(W, H, PixelFormat.Format32bppArgb), g As Graphics = Graphics.FromImage(bmp)
+            Using bmp As New Bitmap(BB, HH, PixelFormat.Format32bppArgb), g As Graphics = Graphics.FromImage(bmp)
                 g.SmoothingMode = SmoothingMode.AntiAlias
                 g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic
                 g.Clear(Color.Transparent)
-                Dim r As New RectangleF(0, 0, W - 1, H - 1)
+                Dim r As New RectangleF(0, 0, BB - 1, HH - 1)
                 Using p = RundesRechteck(r, 10 * s), b As New SolidBrush(hg)
                     g.FillPath(b, p)
-                    If bearbeiten Then
+                    If imEdit Then
                         Using stift As New Pen(Color.FromArgb(230, 255, 207, 74), 2 * dpi) With {.DashStyle = DashStyle.Dash}
                             g.DrawPath(stift, p)
                         End Using
                     End If
                 End Using
                 Using b As New SolidBrush(akzent)
-                    g.FillRectangle(b, 0, 6 * s, 4 * s, H - 12 * s)
+                    g.FillRectangle(b, 0, 6 * s, 4 * s, HH - 12 * s)
                 End Using
                 Dim x0 As Single = pad + 4 * s, y As Single = pad
                 Dim schatten As New SolidBrush(Color.FromArgb(170, 0, 0, 0))
@@ -282,7 +282,7 @@ Public Class OverlayWidget
                     End If
                     Dim wert As String = Str(z, "wert")
                     Dim wertBreite As Single = If(wert IsNot Nothing, g.MeasureString(wert, fWert).Width, 0)
-                    Dim textRect As New RectangleF(x, y + (zeilenH - f.Height) / 2, W - x - pad - wertBreite - 4 * s, f.Height + 2)
+                    Dim textRect As New RectangleF(x, y + (zeilenH - f.Height) / 2, BB - x - pad - wertBreite - 4 * s, f.Height + 2)
                     Using fmt As New StringFormat() With {.Trimming = StringTrimming.EllipsisCharacter, .FormatFlags = StringFormatFlags.NoWrap}
                         g.DrawString(t, f, schatten, New RectangleF(textRect.X + 1.2F * s, textRect.Y + 1.2F * s, textRect.Width, textRect.Height), fmt)
                         Using b As New SolidBrush(farbeZ)
@@ -291,9 +291,9 @@ Public Class OverlayWidget
                     End Using
                     If wert IsNot Nothing Then
                         Dim wy As Single = y + (zeilenH - fWert.Height) / 2
-                        g.DrawString(wert, fWert, schatten, W - pad - wertBreite + 1.2F * s, wy + 1.2F * s)
+                        g.DrawString(wert, fWert, schatten, BB - pad - wertBreite + 1.2F * s, wy + 1.2F * s)
                         Using b As New SolidBrush(farbeZ)
-                            g.DrawString(wert, fWert, b, W - pad - wertBreite, wy)
+                            g.DrawString(wert, fWert, b, BB - pad - wertBreite, wy)
                         End Using
                     End If
                     y += zeilenH
@@ -306,7 +306,7 @@ Public Class OverlayWidget
                     End If
                     If HatNum(z, "fortschritt") Then
                         Dim fp As Single = CSng(Math.Max(0, Math.Min(1, Num(z, "fortschritt", 0))))
-                        Dim bw As Single = W - x - pad
+                        Dim bw As Single = BB - x - pad
                         Using b As New SolidBrush(Color.FromArgb(60, 255, 255, 255))
                             g.FillRectangle(b, x, y + 1 * s, bw, 4 * s)
                         End Using

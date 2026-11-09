@@ -19,7 +19,7 @@ Public Class Hauptfenster
     Private web As WebView2
     Private tray As NotifyIcon
     Private miOverlay As ToolStripMenuItem, miEdit As ToolStripMenuItem
-    Private hotkeys As Hotkeys
+    Private hk As Hotkeys
     Private bilder As BildCache
     Private obs As ObsServer
     Private ReadOnly widgets As New Dictionary(Of String, OverlayWidget)
@@ -49,9 +49,9 @@ Public Class Hauptfenster
         MyBase.OnLoad(e)
         Directory.CreateDirectory(datenOrdner)
         bilder = New BildCache(datenOrdner)
-        hotkeys = New Hotkeys(Handle)
-        AddHandler hotkeys.Ausgeloest, Sub(id) BeginInvoke(Sub() AnSeite(New With {.type = "hotkey", .id = id}))
-        AddHandler hotkeys.Problem, Sub(t) BeginInvoke(Sub() AnSeite(New With {.type = "hinweis", .text = t}))
+        hk = New Hotkeys(Handle)
+        AddHandler hk.Ausgeloest, Sub(id) BeginInvoke(Sub() AnSeite(New With {.type = "hotkey", .id = id}))
+        AddHandler hk.Problem, Sub(t) BeginInvoke(Sub() AnSeite(New With {.type = "hinweis", .text = t}))
         AddHandler obenTimer.Tick, Sub()
                                        For Each w In widgets.Values
                                            w.ObenHalten()
@@ -128,7 +128,7 @@ Public Class Hauptfenster
             End If
             Return
         End If
-        hotkeys?.Dispose()
+        hk?.Dispose()
         obs?.Dispose()
         For Each w In widgets.Values
             w.Close()
@@ -138,7 +138,7 @@ Public Class Hauptfenster
     End Sub
 
     Protected Overrides Sub WndProc(ByRef m As Message)
-        If hotkeys IsNot Nothing AndAlso hotkeys.Verarbeiten(m) Then Return
+        If hk IsNot Nothing AndAlso hk.Verarbeiten(m) Then Return
         MyBase.WndProc(m)
     End Sub
 
@@ -176,9 +176,9 @@ Public Class Hauptfenster
                         For Each h In r.GetProperty("liste").EnumerateArray()
                             liste.Add(New KeyValuePair(Of String, String)(h.GetProperty("id").GetString(), h.GetProperty("combo").GetString()))
                         Next
-                        hotkeys.Setzen(liste, Text2(r, "modus"))
+                        hk.Setzen(liste, Text2(r, "modus"))
                     Case "hotkeyPause"
-                        hotkeys.Pause(Bool(r, "an"))
+                        hk.Pause(Bool(r, "an"))
                     Case "overlayAn"
                         bildschirm = Zahl(r, "bildschirm", bildschirm)
                         OverlaySchalten(Bool(r, "an"))
