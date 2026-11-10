@@ -289,7 +289,9 @@ async function zeichneStart() {
   if (!box) return;
   const nachId = new Map(PERKS.map((p) => [p.id.toLowerCase(), p]));
   const perks = (sch?.perks || []).map((x) => nachId.get(String(x.id || "").toLowerCase()) || perkFinden(D.ohneHtml(x.name || x.id)) || { name: D.ohneHtml(x.name || x.id) });
-  box.innerHTML = `<h3>🛕 Schrein der Geheimnisse</h3>` + (perks.length ? perks.map((p) => `<div class="perk" style="margin:6px 0">${perkIcon(p, "klein")}<div><div class="perk-name">${esc(anzeigename(p))}</div><div class="perk-en">${esc(zweitname(p))} ${p.charakter ? "· " + esc(p.charakter) : ""}</div></div></div>`).join("") : `<div class="box">Gerade keine Daten.</div>`);
+  const ende = Number(sch?.end || 0) * 1000;
+  const alt = ende > 0 && ende < Date.now();
+  box.innerHTML = `<h3>🛕 Schrein der Geheimnisse</h3>` + (alt ? `<div class="box">Der Schrein hat gerade gewechselt (dienstags 16 Uhr). Die neuen Perks kommen in Kürze – hier noch die der letzten Woche:</div>` : "") + (perks.length ? perks.map((p) => `<div class="perk" style="margin:6px 0">${perkIcon(p, "klein")}<div><div class="perk-name">${esc(anzeigename(p))}</div><div class="perk-en">${esc(zweitname(p))} ${p.charakter ? "· " + esc(p.charakter) : ""}</div></div></div>`).join("") : `<div class="box">Gerade keine Daten.</div>`);
 }
 
 // ================================================================ Timer
